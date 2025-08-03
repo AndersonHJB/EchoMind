@@ -6,14 +6,25 @@
 # @Blog    ：https://bornforthis.cn/
 # code is far away from bugs with the god animal protecting
 #    I love animals. They taste delicious.
-import requests
+# import requests
+#
+# API = "http://localhost:11434/api/generate"
+# payload = {
+#     "model": "deepseek-r1:7b",
+#     "prompt": "你好",
+#     "stream": False
+# }
+# res = requests.post(API, json=payload)
+# print(res.json())
+from ollama import chat
 
-API = "http://localhost:11434/api/generate"
-payload = {
-    "model": "deepseek-r1:7b",
-    "prompt": "给我一个贪吃蛇的网页版游戏",
-    "stream": False
-}
-res = requests.post(API, json=payload)
-print(res.json())
+messages = [
+  {
+    'role': 'user',
+    'content': 'Python 九九乘法表',
+  },
+]
+
+response = chat('deepseek-r1:7b', messages=messages)
+print(response['message']['content'])
 
