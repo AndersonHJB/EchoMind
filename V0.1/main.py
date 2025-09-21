@@ -18,6 +18,8 @@ def stream_print(response, show_think=False):
     :param response: ollama 返回的流式结果
     :param show_think: 是否显示思维链
     """
+    # 收集 assistant 的回答
+    assistant_reply = ""
     think_count = 0
     for chunk in response:
         if ('message' in chunk) and ('content' in chunk['message']):
@@ -32,19 +34,30 @@ def stream_print(response, show_think=False):
                     # 直接打印所有输出（包括思维链）
                     print(msg, end='', flush=True)
                 else:
-                    # 不展示思维链时，只打印第2次think之后的内容（即最终回答）
+                    # 不展示思维链时，只打印第 2 次 think 之后的内容（即最终回答）
                     if think_count >= 2:
                         print(msg, end='', flush=True)
+                assistant_reply += msg
+    # return assistant_reply
+    return {
+        "role": "assistant",
+        "content": assistant_reply
+    }
 
 
-user_content = input("Enter your message: ")
-messages = [
-    {
-        'role': 'user',
-        'content': user_content,
-    },
-]
+# user_content = input("Enter your message: ")
+messages = []
 
-response = chat('deepseek-r1:7b', messages=messages, stream=True)
-# 调用逐字打印函数
-stream_print(response, show_think=True)
+if __name__ == '__main__':
+    while True:
+        user_input = input("\nYou: ")
+        if user_input.lower() in ["quit", "exit"]:
+            break
+        messages.append({
+            'role': 'user',
+            'content': user_input,
+        })
+        response = chat(model='deepseek-r1:7b', messages=messages, stream=True)
+        # 调用逐字打印函数
+        msg_data = stream_print(response, show_think=False)
+        messages.append(msg_data)
